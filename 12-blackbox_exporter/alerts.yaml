@@ -1,0 +1,18 @@
+groups:
+- name: blackbox-endpoints
+  rules:
+  - alert: EndpointDown
+    expr: probe_success == 0
+    for: 30s
+    labels:
+      severity: "critical"
+    annotations:
+      summary: "Endpoint {{ $labels.instance }} down"
+
+  - alert: SSLCertExpiringSoon
+    expr: probe_ssl_earliest_cert_expiry{job="blackbox_http2xx"} - time() < 86400 * 90
+    labels:
+      severity: "critical"
+      type: "ssl"
+    annotations:
+      summary: "SSLCert on  {{ $labels.instance }} will expire soon."
