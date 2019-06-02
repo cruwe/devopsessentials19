@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.cruwe</groupId>
+    <artifactId>dockerbuild</artifactId>
+    <version>1.0.0</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>de.cruwe.devopsessentials19</groupId>
+  <artifactId>inspec-runner</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+
+  <name>Docker Image with InSpec Packaged</name>
+  <description>Package and the InSpec Testing Framework</description>
+
+  <organization>
+    <name>Christopher J. Ruwe</name>
+    <url>http://www.cruwe.de</url>
+  </organization>
+
+  <scm>
+    <connection>scm:git:ssh://git@...:...</connection>
+    <url>https://</url>
+  </scm>
+
+  <properties>
+    <dockerregistry>nullregistry</dockerregistry>
+    <fromimage>${dockerregistry}/baseimages</fromimage>
+    <inspecversion>3.9.0</inspecversion>
+  <!--    WARNING: >=4 seems to have changed the license radically -->
+  </properties>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <groupId>pl.project13.maven</groupId>
+        <artifactId>git-commit-id-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <artifactId>exec-maven-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <executions>
+
+          <execution>
+            <id>boostrap-docker-images</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>./build.sh</executable>
+              <arguments>
+                <argument>${timestamp}</argument>
+                <argument>
+                  ${dockerregistry}/${project.artifactId}
+                </argument>
+                <argument>${fromimage}</argument>
+                <argument>${inspecversion}</argument>
+                <argument>${gemsource}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <!-- build blocked bcs https://github.com/fabric8io/docker-maven-plugin/issues/859-->
+        <configuration>
+
+          <images>
+
+            <image>
+              <name>${imagename}/</name>
+              <build>
+                <tags combine.children="append">
+                  <tag>latest</tag>
+                  <tag>${timestamp}</tag>
+                </tags>
+              </build>
+            </image>
+
+          </images>
+
+        </configuration>
+
+        <executions>
+          <execution>
+            <id>package-docker-image</id>
+            <phase>package</phase>
+            <configuration>
+              <skip>true</skip>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
+    </plugins>
+  </build>
+
+  <profiles>
+
+    <profile>
+      <id>hb22</id>
+      <properties>
+        <dockerregistry>artifactory.hb22.cruwe.de:8443</dockerregistry>
+        <fromimage>${dockerregistry}/baseimages</fromimage>
+        <gemsource>https://artifactory.hb22.cruwe.de:8441/repository/rubygems-proxy/</gemsource>
+      </properties>
+    </profile>
+
+  </profiles>
+
+</project>
