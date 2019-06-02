@@ -2,3 +2,4 @@
 /**/target
 /**/docker/**linux-amd64/
 /**/*.zip
+/**/*-foreign*
