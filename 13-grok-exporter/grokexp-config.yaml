@@ -1,0 +1,21 @@
+global:
+    config_version: 2
+input:
+    type: file
+    path: /grok_exporter/logs/syslog
+    readall: true
+    fail_on_missing_logfile: true
+grok:
+    patterns_dir: /grok_exporter/patterns/
+    additional_patterns:
+    - 'CPU CPU[0-9]+'
+metrics:
+    - type: counter
+      name: grok_cpu_throttle_events
+      help: CPU throttle events
+      match: '%{SYSLOGTIMESTAMP} %{WORD:shorthost} %{WORD:subsystem}: \[%{DATA}\] %{CPU:cpu}: %{DATA} cpu clock throttled %{DATA}'
+      labels:
+          cpu: '{{.cpu}}'
+server:
+    port: 9144
+

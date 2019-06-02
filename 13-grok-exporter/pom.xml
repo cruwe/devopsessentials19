@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>de.cruwe</groupId>
+    <artifactId>dockerbuild</artifactId>
+    <version>1.0.0</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>de.cruwe.devopsessentials19</groupId>
+  <artifactId>grok_exporter</artifactId>
+  <version>1.0.0</version>
+  <packaging>pom</packaging>
+
+  <name>Docker Image with grok_exporter  Packaged</name>
+  <description>Package the Grok Exporter</description>
+
+  <organization>
+    <name>Christopher J. Ruwe</name>
+    <url>http://www.cruwe.de</url>
+  </organization>
+
+  <scm>
+    <connection>scm:git:ssh://git@...:...</connection>
+    <url>https://</url>
+  </scm>
+
+  <properties>
+    <dockerregistry>nullregistry</dockerregistry>
+    <version>0.2.7</version>
+    <os_family>linux</os_family>
+    <machine_arch>amd64</machine_arch>
+  </properties>
+
+  <build>
+
+    <plugins>
+
+      <plugin>
+        <groupId>pl.project13.maven</groupId>
+        <artifactId>git-commit-id-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-install-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <artifactId>exec-maven-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <executions>
+
+          <execution>
+            <id>boostrap-docker-images</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>./download.sh</executable>
+              <arguments>
+                <argument>${version}</argument>
+                <argument>${os_family}</argument>
+                <argument>${machine_arch}</argument>
+              </arguments>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <!-- build blocked bcs https://github.com/fabric8io/docker-maven-plugin/issues/859-->
+        <configuration>
+
+          <images>
+
+            <image>
+              <name>${imagename}</name>
+              <build>
+                <args>
+                  <MACHINE_ARCH>${machine_arch}</MACHINE_ARCH>
+                  <OS_FAMILY>${os_family}</OS_FAMILY>
+                  <VERSION>${version}</VERSION>
+                </args>
+                <tags combine.children="append">
+                  <tag>latest</tag>
+                  <tag>${timestamp}</tag>
+                </tags>
+              </build>
+            </image>
+
+          </images>
+
+        </configuration>
+
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <profiles>
+
+    <profile>
+      <id>hb22</id>
+      <properties>
+        <dockerregistry>artifactory.hb22.cruwe.de:8443</dockerregistry>
+      </properties>
+    </profile>
+
+  </profiles>
+
+</project>
