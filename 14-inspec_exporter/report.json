@@ -1,0 +1,313 @@
+{
+  "platform": {
+    "name": "debian",
+    "release": "buster/sid"
+  },
+  "profiles": [
+    {
+      "name": "webserver-example",
+      "version": "0.1.0",
+      "sha256": "ef53c26fbb68834f1edb316838820a8e41820dece73df901945df69aabaaf7e7",
+      "title": "InSpec Demo Profile For/On Webservers",
+      "maintainer": "Christopher J. Ruwe",
+      "summary": "An InSpec Compliance Profile For/On Webservers",
+      "license": "Apache-2.0",
+      "copyright": "Christopher J. Ruwe",
+      "copyright_email": "cjr@cruwe.e",
+      "supports": [
+        {
+          "platform-family": "linux"
+        }
+      ],
+      "attributes": [],
+      "groups": [
+        {
+          "id": "controls/service_spec.rb",
+          "controls": [
+            "nginx-service?",
+            "nginx-service-aux?"
+          ],
+          "title": "Check webserver service"
+        },
+        {
+          "id": "controls/package_spec.rb",
+          "controls": [
+            "nginx-package?"
+          ],
+          "title": "Check webserver binaries"
+        },
+        {
+          "id": "controls/config_spec.rb",
+          "controls": [
+            "nginx-config-proc?"
+          ],
+          "title": "Check webserver configuration"
+        },
+        {
+          "id": "controls/user_spec.rb",
+          "controls": [
+            "nginx-user?"
+          ],
+          "title": "Check webserver user"
+        }
+      ],
+      "controls": [
+        {
+          "id": "nginx-service?",
+          "title": "Is the webserver service enabled and running?",
+          "desc": "An optional description...",
+          "descriptions": [
+            {
+              "label": "default",
+              "data": "An optional description..."
+            }
+          ],
+          "impact": 1,
+          "refs": [],
+          "tags": {},
+          "code": "control 'nginx-service?' do\n  impact 1\n  title 'Is the webserver service enabled and running?'\n  desc 'An optional description...'\n\n  describe service('nginx') do\n    it { should be_installed }\n    it { should be_enabled }\n    it { should be_running }\n  end\n\nend\n",
+          "source_location": {
+            "line": 5,
+            "ref": "./controls/service_spec.rb"
+          },
+          "results": [
+            {
+              "status": "failed",
+              "code_desc": "Service nginx should be installed",
+              "run_time": 0.066280046,
+              "start_time": "2019-05-27T08:26:04+00:00",
+              "message": "expected that `Service nginx` is installed"
+            },
+            {
+              "status": "failed",
+              "code_desc": "Service nginx should be enabled",
+              "run_time": 0.000233541,
+              "start_time": "2019-05-27T08:26:04+00:00",
+              "message": "expected that `Service nginx` is enabled"
+            },
+            {
+              "status": "failed",
+              "code_desc": "Service nginx should be running",
+              "run_time": 0.000145915,
+              "start_time": "2019-05-27T08:26:04+00:00",
+              "message": "expected that `Service nginx` is running"
+            }
+          ]
+        },
+        {
+          "id": "nginx-service-aux?",
+          "title": "Is the webserver service correctly registered with the OS?",
+          "desc": "An optional description...",
+          "descriptions": [
+            {
+              "label": "default",
+              "data": "An optional description..."
+            }
+          ],
+          "impact": 0.5,
+          "refs": [],
+          "tags": {},
+          "code": "control 'nginx-service-aux?' do\n  impact 0.5\n  title 'Is the webserver service correctly registered with the OS?'\n  desc 'An optional description...'\n\n  describe 'service is registered per pid-file' do\n    subject { nginx_conf.params }\n\n    its(['pid']) { should unwrapped be eq '/var/run/nginx.pid' }\n\n  end\nend\n",
+          "source_location": {
+            "line": 18,
+            "ref": "./controls/service_spec.rb"
+          },
+          "results": [
+            {
+              "status": "failed",
+              "code_desc": "service is registered per pid-file [\"pid\"] should unwrapped equal eq \"/var/run/nginx.pid\"",
+              "run_time": 0.065781802,
+              "start_time": "2019-05-27T08:26:04+00:00",
+              "message": "expected nil to unwrapped equal eq \"/var/run/nginx.pid\""
+            }
+          ]
+        },
+        {
+          "id": "nginx-package?",
+          "title": "Does nginx webserver version from packages have latest patches?",
+          "desc": "An optional description...",
+          "descriptions": [
+            {
+              "label": "default",
+              "data": "An optional description..."
+            }
+          ],
+          "impact": 0.7,
+          "refs": [],
+          "tags": {},
+          "code": "control 'nginx-package?' do\n  impact 0.7\n  title 'Does nginx webserver version from packages have latest patches?'\n  desc 'An optional description...'\n\n  describe package('nginx') do\n    it { should be_installed }\n\n    its('version') { should have_later_version_than '1.15.5' }\n  end\nend\n",
+          "source_location": {
+            "line": 5,
+            "ref": "./controls/package_spec.rb"
+          },
+          "results": [
+            {
+              "status": "failed",
+              "code_desc": "System Package nginx should be installed",
+              "run_time": 0.147943845,
+              "start_time": "2019-05-27T08:26:04+00:00",
+              "message": "expected that `System Package nginx` is installed"
+            },
+            {
+              "status": "failed",
+              "code_desc": "System Package nginx version should have later version than \"1.15.5\"",
+              "run_time": 0.000290534,
+              "start_time": "2019-05-27T08:26:04+00:00",
+              "message": "undefined method `split' for nil:NilClass",
+              "exception": "NoMethodError",
+              "backtrace": [
+                "libraries/custom_matchers.rb:23:in `block (2 levels) in load_with_context'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-expectations-3.8.3/lib/rspec/matchers/dsl.rb:133:in `block (2 levels) in match'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-support-3.8.0/lib/rspec/support.rb:113:in `with_failure_notifier'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-expectations-3.8.3/lib/rspec/matchers/dsl.rb:131:in `block in match'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-expectations-3.8.3/lib/rspec/expectations/handler.rb:50:in `block in handle_matcher'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-expectations-3.8.3/lib/rspec/expectations/handler.rb:27:in `with_matcher'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-expectations-3.8.3/lib/rspec/expectations/handler.rb:48:in `handle_matcher'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-its-1.3.0/lib/rspec/its.rb:159:in `should'",
+                "./controls/package_spec.rb:13:in `block (3 levels) in load_with_context'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/example.rb:254:in `instance_exec'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/example.rb:254:in `block in run'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/example.rb:500:in `block in with_around_and_singleton_context_hooks'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/example.rb:457:in `block in with_around_example_hooks'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/hooks.rb:464:in `block in run'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/hooks.rb:602:in `run_around_example_hooks_for'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/hooks.rb:464:in `run'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/example.rb:457:in `with_around_example_hooks'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/example.rb:500:in `with_around_and_singleton_context_hooks'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/example.rb:251:in `run'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/example_group.rb:629:in `block in run_examples'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/example_group.rb:625:in `map'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/example_group.rb:625:in `run_examples'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/example_group.rb:591:in `run'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/example_group.rb:592:in `block in run'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/example_group.rb:592:in `map'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/example_group.rb:592:in `run'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/runner.rb:116:in `block (3 levels) in run_specs'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/runner.rb:116:in `map'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/runner.rb:116:in `block (2 levels) in run_specs'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/configuration.rb:1989:in `with_suite_hooks'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/runner.rb:111:in `block in run_specs'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/reporter.rb:74:in `report'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/rspec-core-3.8.0/lib/rspec/core/runner.rb:110:in `run_specs'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/inspec-3.9.0/lib/inspec/runner_rspec.rb:77:in `run'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/inspec-3.9.0/lib/inspec/runner.rb:146:in `run_tests'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/inspec-3.9.0/lib/inspec/runner.rb:117:in `run'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/inspec-3.9.0/lib/inspec/cli.rb:265:in `exec'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/thor-0.20.3/lib/thor/command.rb:27:in `run'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/thor-0.20.3/lib/thor/invocation.rb:126:in `invoke_command'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/thor-0.20.3/lib/thor.rb:387:in `dispatch'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/thor-0.20.3/lib/thor/base.rb:466:in `start'",
+                "/home/inspector/.gem/ruby/2.5.0/gems/inspec-3.9.0/bin/inspec:12:in `<top (required)>'",
+                "/home/inspector/.gem/ruby/2.5.0/bin/inspec:23:in `load'",
+                "/home/inspector/.gem/ruby/2.5.0/bin/inspec:23:in `<main>'"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "nginx-config-proc?",
+          "title": "Are nginx webserver processes configured correctly?",
+          "desc": "An optional description...",
+          "descriptions": [
+            {
+              "label": "default",
+              "data": "An optional description..."
+            }
+          ],
+          "impact": 0.7,
+          "refs": [],
+          "tags": {},
+          "code": "control 'nginx-config-proc?' do\n  impact 0.7\n  title 'Are nginx webserver processes configured correctly?'\n  desc 'An optional description...'\n\n  describe 'nginx worker config properties' do\n    subject { nginx_conf.params }\n\n\n    its(['worker_processes']) { should unwrapped be >= 1 }\n    its(['events']) { should unwrapped be >= 512 }\n\n  end\nend\n",
+          "source_location": {
+            "line": 5,
+            "ref": "./controls/config_spec.rb"
+          },
+          "results": [
+            {
+              "status": "failed",
+              "code_desc": "nginx worker config properties [\"worker_processes\"] should unwrapped be >= 1",
+              "run_time": 0.002442588,
+              "start_time": "2019-05-27T08:26:04+00:00",
+              "message": "expected nil to unwrapped be >= 1"
+            },
+            {
+              "status": "failed",
+              "code_desc": "nginx worker config properties [\"events\"] should unwrapped be >= 512",
+              "run_time": 0.000363952,
+              "start_time": "2019-05-27T08:26:04+00:00",
+              "message": "expected nil to unwrapped be >= 512"
+            }
+          ]
+        },
+        {
+          "id": "nginx-user?",
+          "title": "Does the user for the webserver exist?",
+          "desc": "An optional description...",
+          "descriptions": [
+            {
+              "label": "default",
+              "data": "An optional description..."
+            }
+          ],
+          "impact": 0.7,
+          "refs": [],
+          "tags": {},
+          "code": "control 'nginx-user?' do\n  impact 0.7\n  title 'Does the user for the webserver exist?'\n  desc 'An optional description...'\n\n  describe user('www-data') do\n    it { should exist }\n    its('uid') { should eq 33 }\n    its('gid') { should eq 33 }\n    its('group') { should eq 'www-data' }\n    its('groups') { should eq ['www-data'] }\n    its('home') { should eq '/var/www' }\n    its('shell') { should eq '/usr/sbin/nologin' }\n  end\nend\n",
+          "source_location": {
+            "line": 5,
+            "ref": "./controls/user_spec.rb"
+          },
+          "results": [
+            {
+              "status": "passed",
+              "code_desc": "User www-data should exist",
+              "run_time": 0.062466382,
+              "start_time": "2019-05-27T08:26:04+00:00"
+            },
+            {
+              "status": "passed",
+              "code_desc": "User www-data uid should eq 33",
+              "run_time": 0.000125975,
+              "start_time": "2019-05-27T08:26:05+00:00"
+            },
+            {
+              "status": "passed",
+              "code_desc": "User www-data gid should eq 33",
+              "run_time": 7.9092e-05,
+              "start_time": "2019-05-27T08:26:05+00:00"
+            },
+            {
+              "status": "passed",
+              "code_desc": "User www-data group should eq \"www-data\"",
+              "run_time": 7.1744e-05,
+              "start_time": "2019-05-27T08:26:05+00:00"
+            },
+            {
+              "status": "passed",
+              "code_desc": "User www-data groups should eq [\"www-data\"]",
+              "run_time": 0.000106652,
+              "start_time": "2019-05-27T08:26:05+00:00"
+            },
+            {
+              "status": "passed",
+              "code_desc": "User www-data home should eq \"/var/www\"",
+              "run_time": 0.063553485,
+              "start_time": "2019-05-27T08:26:05+00:00"
+            },
+            {
+              "status": "passed",
+              "code_desc": "User www-data shell should eq \"/usr/sbin/nologin\"",
+              "run_time": 0.000134912,
+              "start_time": "2019-05-27T08:26:05+00:00"
+            }
+          ]
+        }
+      ],
+      "status": "loaded"
+    }
+  ],
+  "statistics": {
+    "duration": 0.413904163
+  },
+  "version": "3.9.0"
+}
