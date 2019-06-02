@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.cruwe</groupId>
+    <artifactId>dockerbuild</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <name>Docker Build Parent POM</name>
+    <description>Parent POM to Factor Common Elements of Docker Image Builds</description>
+
+    <organization>
+        <name>Christopher J. Ruwe</name>
+        <url>https://www.cruwe.de</url>
+    </organization>
+
+    <properties>
+        <dockernocache>false</dockernocache>
+        <dockerregistry>nullregistry</dockerregistry>
+        <imagename>${dockerregistry}/${project.artifactId}</imagename>
+        <imagepullpolicy>IfNotPresent</imagepullpolicy>
+        <maven.build.timestamp.format>yyMMdd-HHmm</maven.build.timestamp.format>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <timestamp>${maven.build.timestamp}</timestamp>
+        <version.number>${timestamp}.${git.commit.id.abbrev}</version.number>
+    </properties>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+
+        <pluginManagement>
+            <plugins>
+
+                <plugin>
+                    <groupId>pl.project13.maven</groupId>
+                    <artifactId>git-commit-id-plugin</artifactId>
+                    <version>2.2.6</version>
+                    <executions>
+
+                        <execution>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>revision</goal>
+                            </goals>
+                        </execution>
+
+                        <execution>
+                            <id>get-revision-for-clean</id>
+                            <phase>pre-clean</phase>
+                            <goals>
+                                <goal>revision</goal>
+                            </goals>
+                        </execution>
+
+                    </executions>
+                    <configuration>
+                        <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
+                        <generateGitPropertiesFile>false</generateGitPropertiesFile>
+                        <skipPoms>false</skipPoms>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.4</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.1.1</version>
+                    <configuration>
+                        <skipIfEmpty>true</skipIfEmpty>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>io.fabric8</groupId>
+                    <artifactId>docker-maven-plugin</artifactId>
+                    <version>0.28.0</version>
+                    <executions>
+
+                        <execution>
+                            <id>package-docker-image</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>build</goal>
+                            </goals>
+                        </execution>
+
+                        <execution>
+                            <id>push-docker-image</id>
+                            <phase>deploy</phase>
+                            <goals>
+                                <goal>push</goal>
+                            </goals>
+                        </execution>
+
+                        <execution>
+                            <id>remove-docker-image</id>
+                            <phase>clean</phase>
+                            <goals>
+                                <goal>remove</goal>
+                            </goals>
+                        </execution>
+
+                    </executions>
+                    <configuration>
+                        <images>
+                            <image>
+                                <name>${imagename}</name>
+                                <build>
+                                    <cleanup>false</cleanup>
+                                    <dockerFileDir>
+                                        ${project.basedir}/docker
+                                    </dockerFileDir>
+                                    <nocache>${dockernocache}</nocache>
+                                    <tags combine.children="append">
+                                        <tag>latest</tag>
+                                    </tags>
+                                </build>
+                            </image>
+                        </images>
+                        <imagePullPolicy>${imagepullpolicy}</imagePullPolicy>
+                        <verbose>true</verbose>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <version>1.6.0</version>
+                    <executions>
+
+                        <execution>
+                            <id>docker-latest-untag</id>
+                            <phase>compile</phase>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                            <configuration>
+                                <executable>bash</executable>
+                                <commandlineArgs>-c "docker image rm ${imagename}:latest || true"</commandlineArgs>
+                            </configuration>
+                        </execution>
+
+                        <execution>
+                            <id>prune-docker-images</id>
+                            <phase>clean</phase>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                            <configuration>
+                                <executable>docker</executable>
+                                <arguments>
+                                    <argument>image</argument>
+                                    <argument>prune</argument>
+                                    <argument>-f</argument>
+                                </arguments>
+                                <environmentVariables>
+                                    <DOCKER_API_VERSION>1.25</DOCKER_API_VERSION>
+                                </environmentVariables>
+                            </configuration>
+                        </execution>
+
+                    </executions>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.2</version>
+                    <configuration>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>1.8</version>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+    </build>
+
+
+</project>
