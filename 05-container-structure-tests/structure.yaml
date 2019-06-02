@@ -1,0 +1,31 @@
+schemaVersion: "2.0.0"
+
+commandTests:
+  - name:  "apt upgrade"
+    command: "apt-get"
+    args: ["-qqs", "upgrade"]
+    excludedOutput: [".*Inst.*Security.* | .*Security.*Inst.*"]
+    excludedError: [".*Inst.*Security.* | .*Security.*Inst.*"]
+  - name:  "PATH"
+    command: "echo"
+    args: ["$PATH"]
+    expectedOutput: [".*gem/ruby/.*/bin"]
+fileExistenceTests:
+  - name: 'Root'
+    path: '/'
+    shouldExist: true
+    permissions: '-rw-r--r--'
+    uid: 1000
+    gid: 1000
+    isExecutableBy: 'group'
+fileContentTests:
+  - name: 'Debian Sources'
+    path: '/etc/apt/sources.list'
+    expectedContents: ['.*deb\.debian\.org.*']
+    excludedContents: ['.*gce_debian_mirror.*']
+metadataTest:
+  env:
+    - key: PATH
+      value: ".*gem/ruby/2.5.0/bin"
+  entrypoint: ["inspec"]
+  workdir: "/home/inspector"
