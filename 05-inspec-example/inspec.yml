@@ -1,0 +1,10 @@
+name: webserver-example
+title: InSpec Demo Profile For/On Webservers
+maintainer: Christopher J. Ruwe
+copyright: Christopher J. Ruwe
+copyright_email: cjr@cruwe.e
+license: Apache-2.0
+summary: An InSpec Compliance Profile For/On Webservers
+version: 0.1.0
+supports:
+  os-family: linux
