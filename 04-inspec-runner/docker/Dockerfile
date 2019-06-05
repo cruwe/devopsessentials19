@@ -81,6 +81,6 @@ COPY --from=builder /home/inspector/.gem /home/inspector/.gem
 
 ENV PATH=$PATH:/home/inspector/.gem/ruby/2.5.0/bin
 
+WORKDIR /home/inspector/hostpwd
 ENTRYPOINT ["inspec"]
 CMD ["help"]
-WORKDIR /home/inspector/hostpwd

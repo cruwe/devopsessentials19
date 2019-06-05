@@ -32,7 +32,7 @@
   <properties>
     <dockerregistry>nullregistry</dockerregistry>
     <fromimage>${dockerregistry}/baseimages</fromimage>
-    <inspecversion>3.9.0</inspecversion>
+    <inspecversion>3.9.3</inspecversion>
   <!--    WARNING: >=4 seems to have changed the license radically -->
   </properties>
 
