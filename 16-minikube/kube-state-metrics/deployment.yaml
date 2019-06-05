@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: monitoring
+    component: kube-state-metrics
+  name: kube-state-metrics
+  namespace: default
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: monitoring
+      component: kube-state-metrics
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: monitoring
+        component: kube-state-metrics
+    spec:
+      containers:
+        - image: quay.io/coreos/kube-state-metrics:v1.6.0
+          imagePullPolicy: IfNotPresent
+          name: kube-state-metrics
+          ports:
+            - containerPort: 8080
+              name: metrics
+              protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccountName: kube-state-metrics
+      terminationGracePeriodSeconds: 30
