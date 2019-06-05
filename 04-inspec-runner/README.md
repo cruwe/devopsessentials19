@@ -1,42 +1,27 @@
-# Initialize a Check
+# Install it
 ```bash
- docker run \
-  --entrypoint=serverspec-init \
-  --rm \
-  -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK  \
-  -ti \
-  -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK) \
-  -v ${PWD}:/home/inspector/hostpwd \
-  nullregistry/serverspec-runner/buster:latest
-
-```
+mvn package
 
 # Alias It
-```bash
-alias serverspec='\
-        docker run \
+```
+alias inspec='\
+    docker run \
         --rm \
         -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK  \
         -ti \
         -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK) \
         -v ${PWD}:/home/inspector/hostpwd \
-        nullregistry/serverspec-runner/buster:latest \
+        -v /var/run/docker.sock:/var/run/docker.sock \
+        nullregistry/inspec-runner/buster:latest \
     '
-```
-
-# Init Test Structure
-```bash
-docker run \
-    --entrypoint=serverspec-init \
-    --rm \
-    -e SSH_AUTH_SOCK=$SSH_AUTH_SOCK  \
-    -ti \
-    -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK) \
-    -v ${PWD}:/home/inspector/hostpwd \
-    nullregistry/serverspec-runner/buster:latest
 ```
 
 # Run it
 ```
-serverspec spec
+inspec exec 
+    --show-progress 
+    <dir_w_control_init> 
+    --controls=cpackage-01 
+    --input-file=./linux-baseline/attributes.yml  
+    --target ssh://cjr@192.168.66.1
 ```
