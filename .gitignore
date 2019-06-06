@@ -1,6 +1,6 @@
 *iml
 /**/target
-/**/docker/**linux-amd64/
+/**/docker/*linux-amd64/
 /**/*.zip
 /**/*-foreign*
 /05-inspec-example/inspec.lock
