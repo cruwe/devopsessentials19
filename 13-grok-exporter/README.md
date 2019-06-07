@@ -13,7 +13,7 @@ docker run  \
     --rm \
     -p 9144:9144  \
     -ti \
-    -v $PWD/grokexp-config.yaml:/grok_exporter/grok_exporter.yaml 
+    -v $PWD/grokexp-config.yaml:/grok_exporter/grok_exporter.yaml \
     -v /var/log:/grok_exporter/logs \
     nullregistry/grok_exporter:latest
 ```
