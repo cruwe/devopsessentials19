@@ -2,12 +2,11 @@
 
 Just run
 ```bash
-mvn install
+mvn package
 ```
-in this directory to install the parent `pom.xml` used for docker builds.
+in this directory to build the docker image for running the server spec tests.
 
 You may want to experiment with the profile to use local proxies.
-
 
 # Initialize a Check
 ```bash
@@ -19,7 +18,6 @@ You may want to experiment with the profile to use local proxies.
   -v $(dirname $SSH_AUTH_SOCK):$(dirname $SSH_AUTH_SOCK) \
   -v ${PWD}:/home/inspector/hostpwd \
   nullregistry/serverspec-runner/buster:latest
-
 ```
 
 # Alias It
